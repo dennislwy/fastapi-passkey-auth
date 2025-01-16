@@ -1,0 +1,86 @@
+I want to build a FastAPI app that demonstrates login using passkey authentication. Please show me full implementation with the following specifications:
+
+Technical Requirements:
+- Package Management & Environment:
+  - Use Poetry for package management
+  - Set up environment variables in .env file
+  - Implement async throughout the application
+
+- Database
+  - Use SQLAlchemy to access database and use SQLite for demo purposes
+    - use Mapped in sqlalchemy.orm
+  - Database migrations handled by Alembic
+  - Create database tables on startup if not yet exist
+  - Migrate database to latest on startup
+
+2. Required Dependencies:
+   - fastapi with async support
+   - webauthn for passkey authentication
+   - sqlalchemy[asyncio] + aiosqlite for async database operations
+   - alembic for database migrations
+   - pydantic-settings for configuration
+
+3. Authentication Features:
+   - Users can login using either:
+     * Email & password
+     * Passkey (WebAuthn)
+
+4. Required API Endpoints:
+   - POST /auth/webauthn/register/generate-options
+     * Endpoint for initiating the registration flow
+   - POST /auth/webauthn/register/verify
+     * Endpoint for verifying and completing new passkey registration
+   - GET /auth/webauthn/authenticate/generate-options
+     * Endpoint for initiating the authentication flow
+   - POST /auth/webauthn/authenticate/verify
+     * Endpoint for verifying and completing authentication with existing passkey
+   - GET /user/profile
+     * Protected resource returning user profile and associated authenticators
+
+5. Code Quality Requirements:
+   - Add Google style documentation to code
+   - Include sections for 'Args', 'Returns' and 'Raises' in docstrings
+   - Examples where appropriate
+   - Add inline comments explaining code segments
+   - Use type hints throughout the code
+
+6. Others:
+   - JWT-based authentication for protected routes
+   - add endpoint to refresh JWT tokens
+   - Use best practice for password hashing (when using traditional login)
+   - Proper dependency injection setup
+   - Example .env file with all required variables
+   - Pydantic schemas for all requests/responses
+   - Async API implementations with proper error handling
+
+7. Project Structure:
+Please organize the code in a modular way with separate directories for models, schemas, API routes, and services, below is a sample project structure:
+- app/
+  - __init__.py
+  - main.py
+  - config.py
+  - dependencies.py
+  - models/
+    - __init__.py
+    - base.py
+    - user.py
+  - schemas/
+    - __init__.py
+    - auth.py
+    - user.py
+  - api/
+    - __init__.py
+    - auth.py
+    - user.py
+  - services/
+    - __init__.py
+    - auth.py
+- alembic/
+  - env.py
+  - versions/
+- alembic.ini
+- pyproject.toml
+- poetry.lock
+- .env
+
+The code should be production-ready quality with proper error handling, type hints, and comprehensive documentation.
