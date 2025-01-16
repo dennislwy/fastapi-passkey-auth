@@ -1,19 +1,38 @@
-from pydantic import BaseModel, EmailStr
-from typing import List
+"""Pydantic schemas for user-related operations."""
+
+from datetime import datetime
+from typing import List, Optional
+from uuid import UUID
+
+from pydantic import BaseModel, EmailStr, ConfigDict
+
+from app.schemas.webauthn import AuthenticatorRead
 
 class UserBase(BaseModel):
-    """Base user schema."""
+    """Base schema for user data."""
     email: EmailStr
+    full_name: str
 
 class UserCreate(UserBase):
-    """Schema for user creation."""
-    password: str
+    """Schema for creating a new user."""
+    password: Optional[str] = None
 
-class UserProfile(UserBase):
-    """Schema for user profile response."""
-    id: int
+class UserUpdate(BaseModel):
+    """Schema for updating user data."""
+    email: Optional[EmailStr] = None
+    full_name: Optional[str] = None
+    password: Optional[str] = None
+
+class UserRead(UserBase):
+    """Schema for reading user data."""
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
     is_active: bool
-    authenticators: List[dict]
+    created_at: datetime
+    updated_at: datetime
+    last_login_at: Optional[datetime]
 
-    class Config:
-        from_attributes = True
+class UserProfile(UserRead):
+    """Schema for user profile including authenticators."""
+    authenticators: List[AuthenticatorRead]
