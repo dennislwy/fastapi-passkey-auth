@@ -1,5 +1,6 @@
 from typing import List, Optional
-from sqlalchemy import String, Boolean, ForeignKey
+from datetime import datetime
+from sqlalchemy import String, Boolean, ForeignKey, DateTime
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.orm import relationship
 from .base import Base
@@ -20,6 +21,7 @@ class User(Base):
     password_hash: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     full_name: Mapped[str] = mapped_column(String(255))
     is_active = mapped_column(Boolean, default=True)
+    last_login: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
 
     authenticators: Mapped[List["Authenticator"]] = relationship(
         back_populates="users",

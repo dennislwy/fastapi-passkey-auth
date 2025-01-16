@@ -54,11 +54,11 @@ async def startup():
     """
     logging.info("Starting up server")
 
-    # Create database tables
-    await init_db()
-
     # Run Alembic migrations
     await run_async_upgrade()
+
+    # Create database tables
+    await init_db()
 
 async def shutdown():
     """Handles the shutdown event of the FastAPI application.
