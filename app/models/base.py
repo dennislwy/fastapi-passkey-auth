@@ -1,5 +1,8 @@
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
-from sqlalchemy.orm import sessionmaker, declarative_base
+from datetime import datetime, timezone
+from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
+# from sqlalchemy.orm import sessionmaker, declarative_base
+from sqlalchemy import DateTime
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from app.config import settings
 
 engine = create_async_engine(
@@ -16,4 +19,12 @@ engine = create_async_engine(
 
 AsyncSessionLocal = async_sessionmaker(engine, expire_on_commit=False)
 
-Base = declarative_base()
+class Base(DeclarativeBase):
+    """Base class for all SQLAlchemy models."""
+
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(timezone.utc))
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime,
+        default=datetime.now(timezone.utc),
+        onupdate=datetime.now(timezone.utc)
+    )
