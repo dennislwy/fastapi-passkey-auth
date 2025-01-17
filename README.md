@@ -22,12 +22,12 @@ This project demonstrates a FastAPI application with login functionality using p
     - Email & password
     - Passkey (WebAuthn)
 
-- **API Endpoints**:
+## Endpoints
   - `POST /auth/webauthn/register/generate-options`: Initiates the registration flow
   - `POST /auth/webauthn/register/verify`: Verifies and completes new passkey registration
-  - `GET /auth/webauthn/authenticate/generate-options`: Initiates the authentication flow
+  - `POST /auth/webauthn/authenticate/generate-options`: Initiates the authentication flow
   - `POST /auth/webauthn/authenticate/verify`: Verifies and completes authentication with existing passkey
-  - `GET /user/profile`: Protected resource returning user profile and associated authenticators
+![](docs/fastapi-passkey-auth.png)
 
 ## Installation
 
@@ -76,4 +76,4 @@ To add a new database migration, follow these steps:
     ```
 
 ## License
-This project is licensed under the MIT License. See the [LICENSE](https://raw.githubusercontent.com/dennislwy/fastapi-passkey-auth/refs/heads/main/LICENSE) file for details.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
