@@ -11,7 +11,6 @@ from .config import settings
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
 async def get_db() -> AsyncGenerator[AsyncSession, None]:
-# async def get_db() -> AsyncSession:
     """Get async database session.
 
     Yields:
@@ -19,15 +18,19 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
 
     Example:
         ```python
-        @router.get("/items")
-        async def get_items(db: AsyncSession = Depends(get_db)):
-            result = await db.execute(select(Item))
-            return result.scalars().all()
+        @router.get("/users")
+        async def get_users(db: AsyncSession = Depends(get_db)):
+            users = await db.execute(select(User))
+            return users.scalars().all()
         ```
     """
     async with async_session_factory() as session:
         try:
             yield session
+        #     await session.commit()
+        # except Exception:
+        #     await session.rollback()
+        #     raise
         finally:
             await session.close()
 

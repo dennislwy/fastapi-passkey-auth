@@ -1,8 +1,15 @@
 from alembic import command, config
 from .models.base import Base, engine
 
-# Create database tables
-async def init_db():
+async def init_db() -> None:
+    """Initialize the database.
+
+    Creates all tables if they don't exist and runs any pending migrations.
+    Should be called when the application starts.
+
+    Raises:
+        Exception: If database initialization fails.
+    """
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
