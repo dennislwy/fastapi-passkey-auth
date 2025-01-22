@@ -1,0 +1,116 @@
+Help me build a fastapi authentication app using passkey using python library fastapi, uvicorn, webauthn, aiosqlite, sqlalchemy[asyncio], pydantic[email], python-jose[cryptography], pydantic-settings and python-multipart.
+Below are my endpoints and models:
+
+POST /auth/webauthn/register/generate-options, A POST endpoint that the client uses to initiate the registration ceremony. It expects to receive a `CredentialCreationOptionsRequest` as the body and returns a `PublicKeyCredentialCreationOptions` as the response.
+POST /auth/webauthn/register/verify, A POST endpoint that the client uses to verify and complete the registration of a new passkey. It expects to receive a `RegistrationResponseJSON` as the body if the registration is correctly verified.
+
+GET /auth/webauthn/authenticate/generate-options, A GET endpoint that the client uses to initiate the authentication ceremony. It returns a `PublicKeyCredentialRequestOptions` as response.
+POST /auth/webauthn/authenticate/verify, A POST endpoint that the client uses to verify and complete the authentication with an existing passkey. It expects to receive an `AuthenticationResponseJSON` as body and returns a JWT access & refresh token as response if the registration is correctly verified.
+
+POST /auth/login, login using email and password, returns a JWT access & refresh token.
+GET /users/me, returns the current user information.
+
+# schemas/webauthn.py
+from pydantic import BaseModel, EmailStr
+
+class CredentialCreationOptionsRequest(BaseModel):
+    id: str
+    email: EmailStr
+    display_name: str
+
+RegistrationResponseJSON example:
+{
+    // A unique identifier for the credential
+    "id": "wh7ZbXdYJqvLHoUJLhvIZdEpnWY",
+    "rawId": "wh7ZbXdYJqvLHoUJLhvIZdEpnWY",
+    "response": {
+    // Base64 encoded information about the challenge and origin
+    "clientDataJSON": "eyJ0eXBlIjoid2ViYXV0aG4uY3JlYXRlIiwiY2hhbGxlbmdlIjoidXhNdGFQQWdFTW00SmxKTmVVTGNhejA1N1FJY3gwVnBjU18zMlRpUzlZWSIsIm9yaWdpbiI6Imh0dHBzOi8vdGVzdC5uZ3Jvay1mcmVlLmFwcCJ9",
+    // CBOR encoded ArrayBuffer containing the new public key, as well as signature over the entire attestationObject with a private key
+    "attestationObject": "o2NmbXRkbm9uZWdhdHRTdG10oGhhdXRoRGF0YViYuxv2BAbe0DBOLeqfUpW2uiF51_BxvF7IDjWg9luR8pNdAAAAAPv8MAcVTk7MjAtuAgVX170AFMIe2W13WCaryx6FCS4byGXRKZ1mpQECAyYgASFYID1BIjgJvI0h58_Jnf4cP0SNQ9EZvbh51oCIN8-hVk2eIlgg88fJ2ojioYmNpeG6eCI8FA91T_crlXceNuCQDtK5W2o"
+    },
+    "clientExtensionResults": {},
+    "type": "public-key",
+    "email": "Test@test.it"
+}
+
+AuthenticationResponseJSON example:
+{
+  // A unique identifier for the credential
+  "id": "wh7ZbXdYJqvLHoUJLhvIZdEpnWY",
+  "rawId": "wh7ZbXdYJqvLHoUJLhvIZdEpnWY",
+  "response": {
+  // Base64 encoded information about the challenge and origin
+  "clientDataJSON": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoidm01eFlzNkxzYjVJT1k4dHNKaEdCVVlWWG1oWUVOQzJWTklsVHZSeGF5dyIsIm9yaWdpbiI6Imh0dHBzOi8vdGVzdC5uZ3Jvay1mcmVlLmFwcCJ9",
+  // An ArrayBuffer containing information from the authenticator
+  "authenticatorData": "uxv2BAbe0DBOLeqfUpW2uiF51_BxvF7IDjWg9luR8pMdAAAAAA",
+  // an ArrayBuffer object which is the signature of the authenticator
+  "signature": "MEUCICRfk1dw2rRq65C_-eARsrJ5ujxATHxGOPcjy3JmtZITAiEAsRGtTVHp5rdnf1MphEKbxfS9riNGpUtcrWBOhOblt50"
+  },
+  "clientExtensionResults": {},
+  "type": "public-key"
+}
+
+# models/user.py
+from typing import Optional
+from uuid import uuid4
+from sqlalchemy import String, Boolean
+from sqlalchemy.orm import Mapped, mapped_column
+from .base import Base, GUID
+
+class User(Base):
+    """User model for storing user information.
+
+    Attributes:
+        email: User's email address
+        hashed_password: Hashed password for traditional login
+        full_name: User's full name
+        is_active: Flag indicating if the user is active
+        is_verified: Flag indicating if the user is verified
+        is_superuser: Flag indicating if the user is a superuser
+    """
+    __tablename__ = "users"
+
+    id: Mapped[GUID] = mapped_column(GUID, primary_key=True, default=str(uuid4()), index=True)
+    email: Mapped[str] = mapped_column(String(255), unique=True, index=True)
+    hashed_password: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    full_name: Mapped[str] = mapped_column(String(255))
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    is_verified: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    is_superuser: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+
+# models/webauthn.py
+from typing import Optional
+from uuid import uuid4
+from sqlalchemy import String, ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from .models import User
+from .base import Base, GUID
+
+class WebAuthnCredential(Base):
+    __tablename__ = "webauthn_credentials"
+
+    credential_id: Mapped[str] = mapped_column(String(255), unique=True, index=True, nullable=False)
+    credential_public_key: Mapped[str] = mapped_column(String(255), nullable=False)
+    sign_count: Mapped[int] = mapped_column(nullable=False, default=0)
+    transports: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+
+    user_id: Mapped[GUID] = mapped_column(ForeignKey("users.id"))
+    user: Mapped[User] = relationship(back_populates="webauthn_credentials")
+
+# .env
+DEBUG=true
+
+# Database
+DATABASE_URL=sqlite+aiosqlite:///./app.db
+
+# Security
+SECRET_KEY=your-secret-key
+JWT_ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=15
+REFRESH_TOKEN_EXPIRE_DAYS=7
+
+# WebAuthn Settings
+WEBAUTHN_RP_ID=localhost
+WEBAUTHN_RP_NAME=FastAPI Passkey Demo
+WEBAUTHN_RP_ORIGIN=http://localhost:8000

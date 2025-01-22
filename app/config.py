@@ -1,5 +1,5 @@
 from typing import Any, Dict
-from pydantic import SecretStr, field_validator
+from pydantic import field_validator, SecretStr
 from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
@@ -23,7 +23,7 @@ class Settings(BaseSettings):
     DATABASE_URL: str
 
     # Security Settings
-    SECRET_KEY: SecretStr
+    SECRET_KEY: str
     JWT_ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7

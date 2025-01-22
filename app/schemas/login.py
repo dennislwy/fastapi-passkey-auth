@@ -1,6 +1,6 @@
-from pydantic import BaseModel, EmailStr
+from typing import List
+from pydantic import BaseModel
 
-class LoginRequest(BaseModel):
-    """Schema for traditional login requests."""
-    email: EmailStr
-    password: str
+class LoginOptions(BaseModel):
+    """Schema for available login options."""
+    options: List[str] = []

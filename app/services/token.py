@@ -10,11 +10,12 @@ from ..config import settings
 class TokenService:
     """Service for handling JWT token operations."""
 
-    def create_access_token(self, user_id: UUID) -> str:
+    def create_access_token(self, user_id: UUID, email: str) -> str:
         """Create a JWT access token.
 
         Args:
             user_id: User's UUID.
+            email: User's email address.
 
         Returns:
             str: JWT access token.
@@ -24,15 +25,12 @@ class TokenService:
 
         to_encode = {
             "sub": str(user_id),
+            "email": email,
             "exp": expire,
             "type": "access"
         }
 
-        return jwt.encode(
-            to_encode,
-            settings.SECRET_KEY,
-            algorithm=settings.JWT_ALGORITHM
-        )
+        return self._create_token(to_encode)
 
     def create_refresh_token(self, user_id: UUID) -> str:
         """Create a JWT refresh token.
@@ -52,8 +50,33 @@ class TokenService:
             "type": "refresh"
         }
 
+        return self._create_token(to_encode)
+
+    def create_tokens(self, user_id: UUID, email: str) -> tuple[str, str]:
+        """Create access and refresh tokens.
+
+        Args:
+            user_id: User's UUID.
+
+        Returns:
+            tuple[str, str]: Access and refresh tokens.
+        """
+        access_token = self.create_access_token(user_id, email)
+        refresh_token = self.create_refresh_token(user_id)
+
+        return access_token, refresh_token
+
+    def _create_token(self, data: dict) -> str:
+        """Create a JWT token.
+
+        Args:
+            data: The data to encode in the token.
+
+        Returns:
+            The encoded JWT token.
+        """
         return jwt.encode(
-            to_encode,
+            data,
             settings.SECRET_KEY,
             algorithm=settings.JWT_ALGORITHM
         )

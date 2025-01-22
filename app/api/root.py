@@ -1,8 +1,8 @@
 from datetime import datetime
 from fastapi import APIRouter
 from fastapi.responses import RedirectResponse
-from ..schemas.root import Health
-from ..utils import get_version
+from app.schemas.root import Health
+from app.utils import get_version
 
 router = APIRouter()
 

@@ -4,8 +4,7 @@ from .models.base import Base, engine
 async def init_db() -> None:
     """Initialize the database.
 
-    Creates all tables if they don't exist and runs any pending migrations.
-    Should be called when the application starts.
+    Creates all tables if they don't exist
 
     Raises:
         Exception: If database initialization fails.

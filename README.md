@@ -23,10 +23,35 @@ This project demonstrates a FastAPI application with login functionality using p
     - Passkey (WebAuthn)
 
 ## Endpoints
-  - `POST /auth/webauthn/register/generate-options`: Initiates the registration flow
-  - `POST /auth/webauthn/register/verify`: Verifies and completes new passkey registration
-  - `POST /auth/webauthn/authenticate/generate-options`: Initiates the authentication flow
-  - `POST /auth/webauthn/authenticate/verify`: Verifies and completes authentication with existing passkey
+WebAuthn
+- [x] `POST /auth/webauthn/register/generate-options`: Initiates the registration flow
+- [ ] `POST /auth/webauthn/register/verify`: Verifies and completes new passkey registration
+- [ ] `GET /auth/webauthn/authenticate/generate-options`: Initiates the authentication flow
+- [ ] `POST /auth/webauthn/authenticate/verify`: Verifies and completes authentication with existing passkey
+
+Auth
+- [x] `POST /auth/register`, Register new user
+- [x] `POST /auth/login`, Login using email & password
+- [ ] `POST /auth/logout`, Logout
+- [ ] `POST /auth/jwt/refresh`, Refresh tokens
+
+Password
+- [ ] `POST /auth/password/forgot`, Request reset password
+- [ ] `POST /auth/password/reset`, Reset password using token
+- [ ] `GET /auth/password/reset/verify`, Verify if reset token still valid
+- [ ] `POST /auth/password/change`, Change password
+
+Users
+- [x] `GET /users/me`, Get current user information
+- [x] `POST /users/me`, Update current user information
+- [ ] `DELETE /users/me`, Delete current user
+- [ ] `GET /users/{user_id}`, Get a user information
+- [ ] `POST /users/{user_id}`, Update a user information
+- [ ] `DELETE /users/{user_id}`, Delete a user
+
+Root
+- [x] `GET /health`, Health check
+
 ![](docs/fastapi-passkey-auth.png)
 
 ## Installation

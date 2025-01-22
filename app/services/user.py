@@ -17,7 +17,7 @@ class UserService:
             session: Async database session.
         """
         self.session = session
-        self.password_service = PasswordService()
+        self.password_service = PasswordService(session)
 
     async def get_user_by_email(self, email: str) -> Optional[User]:
         """Get user by email address.
@@ -70,7 +70,7 @@ class UserService:
         # Create user
         user_dict = user_data.model_dump()
         if user_data.password:
-            user_dict["hashed_password"] = self.password_service.hash_password(
+            user_dict["hashed_password"] = self.password_service.get_password_hash(
                 user_data.password
             )
         user_dict.pop("password", None)
@@ -102,22 +102,22 @@ class UserService:
                 detail="User not found"
             )
 
-        # Check email uniqueness if being updated
-        if update_data.email and update_data.email != user.email:
-            existing_user = await self.get_user_by_email(update_data.email)
-            if existing_user:
-                raise HTTPException(
-                    status_code=400,
-                    detail="Email already registered"
-                )
+        # # Check email uniqueness if being updated
+        # if update_data.email and update_data.email != user.email:
+        #     existing_user = await self.get_user_by_email(update_data.email)
+        #     if existing_user:
+        #         raise HTTPException(
+        #             status_code=400,
+        #             detail="Email already registered"
+        #         )
 
         # Update user fields
         update_dict = update_data.model_dump(exclude_unset=True)
-        if update_data.password:
-            update_dict["hashed_password"] = self.password_service.hash_password(
-                update_data.password
-            )
-        update_dict.pop("password", None)
+        # if update_data.password:
+        #     update_dict["hashed_password"] = self.password_service.get_password_hash(
+        #         update_data.password
+        #     )
+        # update_dict.pop("password", None)
 
         for key, value in update_dict.items():
             setattr(user, key, value)

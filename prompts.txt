@@ -7,7 +7,7 @@ Technical Requirements:
   - Implement async throughout the application
 
 - Database
-  - Use SQLAlchemy to access database and use SQLite for demo purposes
+  - Use SQLAlchemy to async access SQLite database
     - use Mapped in sqlalchemy.orm
   - Database migrations handled by Alembic
   - Create database tables on startup if not yet exist
@@ -26,16 +26,30 @@ Technical Requirements:
      * Passkey (WebAuthn)
 
 4. Required API Endpoints:
-   - POST /auth/webauthn/register/generate-options
-     * Endpoint for initiating the registration flow
-   - POST /auth/webauthn/register/verify
-     * Endpoint for verifying and completing new passkey registration
-   - GET /auth/webauthn/authenticate/generate-options
-     * Endpoint for initiating the authentication flow
-   - POST /auth/webauthn/authenticate/verify
-     * Endpoint for verifying and completing authentication with existing passkey
-   - GET /user/profile
-     * Protected resource returning user profile and associated authenticators
+  - Webauthn
+    - POST /auth/webauthn/register/generate-options
+      * Endpoint for initiating the registration flow
+    - POST /auth/webauthn/register/verify
+      * Endpoint for verifying and completing new passkey registration
+    - GET /auth/webauthn/authenticate/generate-options
+      * Endpoint for initiating the authentication flow
+    - POST /auth/webauthn/authenticate/verify
+      * Endpoint for verifying and completing authentication with existing passkey
+  - Users
+    - GET /users/me
+    - POST /users/me
+    - DELETE /users/me
+  - Password
+    - POST /auth/password/forgot
+    - POST /auth/password/reset
+    - GET /auth/password/reset/verify
+    - POST /auth/password/change
+  - Signup, login, logout & refresh tokens
+    - POST /auth/signup
+    - POST /auth/login
+    - GET /auth/login/options
+    - POST /auth/logout
+    - POST /auth/refresh, use refresh token to exchange for a new access & refresh tokens
 
 5. Code Quality Requirements:
    - Add Google style documentation to code
@@ -46,7 +60,6 @@ Technical Requirements:
 
 6. Others:
    - JWT-based authentication for protected routes
-   - add endpoint to refresh JWT tokens
    - Use best practice for password hashing (when using traditional login)
    - Proper dependency injection setup
    - Example .env file with all required variables
@@ -64,23 +77,27 @@ Please organize the code in a modular way with separate directories for models, 
     - __init__.py
     - base.py
     - user.py
+    - webautn.py
   - schemas/
     - __init__.py
-    - auth.py
     - user.py
+    - token.py
+    - login.py
+    - password.py
+    - webauthn.py
   - api/
     - __init__.py
-    - auth.py
+    - auth_login.py
+    - auth_password.py
+    - auth_webauthn.py
     - user.py
   - services/
     - __init__.py
-    - auth.py
-- alembic/
-  - env.py
-  - versions/
-- alembic.ini
-- pyproject.toml
-- poetry.lock
+    - user.py, user service
+    - login.py, login & logout service
+    - token.py, JWT token service (create access token, create refresh token, verify token, revoke token)
+    - password.py, reset & change password service
+    - webauthn.py, webauthn service (register, authenticate & manage passkey)
 - .env
 
 The code should be production-ready quality with proper error handling, type hints, and comprehensive documentation.

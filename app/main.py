@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.database import init_db, run_async_upgrade
 from app.utils import get_version
-from app.api import root, auth, user
+from app.routers import router
 from app.config import settings
 
 def handle_exception(exc_type, exc_value, exc_traceback):
@@ -66,10 +66,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Include routers
-app.include_router(root.router, prefix="", tags=["root"])
-app.include_router(auth.router, prefix="/auth", tags=["auth"])
-app.include_router(user.router, prefix="/user", tags=["user"])
+app.include_router(router)
 
 async def startup():
     """Handles the startup event of the FastAPI application.
@@ -82,7 +79,7 @@ async def startup():
     logging.info("Starting up server")
 
     # Run Alembic migrations
-    await run_async_upgrade()
+    # await run_async_upgrade()
 
     # Create database tables
     await init_db()
