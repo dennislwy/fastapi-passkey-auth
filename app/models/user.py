@@ -26,6 +26,6 @@ class User(Base):
     is_superuser: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
 
     # Relationships
-    # credentials: Mapped[List["WebAuthnCredential"]] = relationship(
-    #     back_populates="users", cascade="all, delete-orphan"
-    # )
+    credentials: Mapped[List["WebAuthnCredential"]] = relationship(
+        back_populates="users", cascade="all, delete-orphan"
+    )
