@@ -12,15 +12,12 @@ async def index():
 class CSSResponse(HTMLResponse):
     media_type = "text/css"
 
-
 class JavascriptResponse(HTMLResponse):
     media_type = "application/javascript"
-
 
 @router.get("/webauthn_client.js", response_class=JavascriptResponse, include_in_schema=False)
 async def client_js():
     return Path("static/webauthn_client.js").read_bytes()
-
 
 @router.get("/styles.css", response_class=CSSResponse, include_in_schema=False)
 async def client_css():

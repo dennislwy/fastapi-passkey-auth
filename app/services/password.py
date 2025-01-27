@@ -5,7 +5,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from passlib.context import CryptContext
 from ..models.user import User
-from ..models.password import PasswordResetToken
+from ..models.password_reset import PasswordResetToken
 
 class PasswordService:
     """Service for handling password-related operations."""

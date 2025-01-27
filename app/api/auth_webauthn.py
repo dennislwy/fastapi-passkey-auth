@@ -84,10 +84,8 @@ async def generate_register_options(
         challenge=challenge
         )
 
-    # Store challenge in memory cache
-    # challenge_cache[user_id] = challenge
-
     # Store challenge in session for verification
+    # challenge_cache[user_id] = challenge
     request.session[WEBAUTHN_REGISTER_CHALLENGE] = base64.b64encode(options.challenge).decode()
 
     return options
@@ -95,16 +93,16 @@ async def generate_register_options(
 @router.post("/webauthn/register/verify")
 async def verify_registration(
     request: Request,
-    current_user: CurrentUser,
     credential: CustomRegistrationCredential,
+    current_user: CurrentUser,
     db: Annotated[AsyncSession, Depends(get_db)]
 ) -> VerifiedRegistration:
     try:
         # Get expected challenge
         user_id = str(current_user.id)
-        # expected_challenge = challenge_cache.get(user_id)
 
         # Get expected challenge from session
+        # expected_challenge = challenge_cache.get(user_id)
         expected_challenge = base64.b64decode(request.session[WEBAUTHN_REGISTER_CHALLENGE].encode())
 
         if not expected_challenge:
@@ -120,9 +118,6 @@ async def verify_registration(
             expected_rp_id=settings.WEBAUTHN_RP_ID,
             expected_origin=settings.WEBAUTHN_RP_ORIGIN
         )
-
-        # Remove challenge from memory cache
-        challenge_cache.pop(user_id)
 
         # Store webauthn credential in database
         credential = WebAuthnCredential(
@@ -142,6 +137,11 @@ async def verify_registration(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e)) from e
+
+    finally:
+        # Clear challenge from session data
+        # challenge_cache.pop(user_id)
+        request.session.pop(WEBAUTHN_REGISTER_CHALLENGE, None)
 
 # @router.get("/webauthn/authenticate/generate-options")
 # async def generate_authenticate_options(

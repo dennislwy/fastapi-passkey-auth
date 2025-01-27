@@ -62,8 +62,8 @@ app = FastAPI(
 app.add_middleware(
     SessionMiddleware,
     secret_key=settings.SECRET_KEY,
-    session_cookie="session",
-    max_age=3600,  # 1 hour in seconds
+    session_cookie="webauthn",
+    max_age=120,  # 1 hour in seconds
     same_site="strict",
     https_only=settings.HTTPS_ONLY
 )

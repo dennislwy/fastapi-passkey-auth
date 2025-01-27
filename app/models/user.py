@@ -27,5 +27,5 @@ class User(Base):
 
     # Relationships
     credentials: Mapped[List["WebAuthnCredential"]] = relationship(
-        back_populates="users", cascade="all, delete-orphan"
+        back_populates="user", cascade="all, delete-orphan"
     )

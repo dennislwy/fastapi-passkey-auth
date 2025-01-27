@@ -16,4 +16,4 @@ class WebAuthnCredential(Base):
     user_id: Mapped[GUID] = mapped_column(ForeignKey("users.id"))
 
     # Relationships
-    user: Mapped["User"] = relationship(back_populates="webauthn_credentials")
+    user: Mapped["User"] = relationship(back_populates="credentials")
