@@ -2,9 +2,10 @@ import sys
 import logging
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
+from starlette.middleware.sessions import SessionMiddleware
 from fastapi.middleware.cors import CORSMiddleware
 from app.database import init_db, run_async_upgrade
-from app.utils import get_version
+from app.utils.version import get_version
 from app.routers import router
 from app.config import settings
 
@@ -55,6 +56,16 @@ app = FastAPI(
     contact={"name": "Dennis Lee"},
     lifespan=lifespan,
     debug=settings.DEBUG
+)
+
+# Add Session Middleware (must be added before CORS)
+app.add_middleware(
+    SessionMiddleware,
+    secret_key=settings.SECRET_KEY,
+    session_cookie="session",
+    max_age=3600,  # 1 hour in seconds
+    same_site="strict",
+    https_only=settings.HTTPS_ONLY
 )
 
 # Configure CORS

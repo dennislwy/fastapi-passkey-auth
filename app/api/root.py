@@ -2,21 +2,21 @@ from datetime import datetime
 from fastapi import APIRouter
 from fastapi.responses import RedirectResponse
 from app.schemas.root import Health
-from app.utils import get_version
+from app.utils.version import get_version
 
 router = APIRouter()
 
 up_since = datetime.now(tz=datetime.now().astimezone().tzinfo)
 version = get_version()
 
-@router.get("/", include_in_schema=False)
-def root():
-    """Redirects the root URL to the API documentation.
-    \f
-    Returns:
-        RedirectResponse: A response that redirects to the '/docs' URL.
-    """
-    return RedirectResponse(url='/docs')
+# @router.get("/", include_in_schema=False)
+# async def root():
+#     """Redirects the root URL to the API documentation.
+#     \f
+#     Returns:
+#         RedirectResponse: A response that redirects to the '/docs' URL.
+#     """
+#     return RedirectResponse(url='/docs')
 
 @router.get("/health")
 async def health_check() -> Health:
